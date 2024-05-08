@@ -45,8 +45,14 @@ const Home = () => {
           .slice(0)
           .reverse()
           .map((problem, index) => (
-            <li key={index} style={listItemStyle}>
-              {problem}
+            <li key={index}>
+              <a
+                href={`https://www.acmicpc.net/problem/${problem}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {problem}
+              </a>
             </li>
           ))}
       </ol>
