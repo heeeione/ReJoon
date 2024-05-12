@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { motion } from 'framer-motion';
 const Home = () => {
   const [problemNumber, setProblemNumber] = useState('');
   const [problemQueue, setProblemQueue] = useState<string[]>([]);
@@ -26,46 +27,67 @@ const Home = () => {
   const handleRemoveProblem = () => {
     if (problemQueue.length > 0) {
       const newProblemQueue = [...problemQueue];
-      newProblemQueue.shift(); // 선입선출로 첫 번째 아이템을 삭제합니다.
+      newProblemQueue.shift();
       setProblemQueue(newProblemQueue);
     }
   };
 
   return (
     <div style={centerDivStyle}>
-      <h3>번호를 입력해주세요</h3>
-      <div style={centerDiv}>
-        <input type="text" value={problemNumber} onChange={handleInputChange} />
-        <button onClick={handleAddProblem}>추가</button>
-        <button onClick={handleRemoveProblem}>삭제</button>
+      <div className="timer" style={{ width: '100%', height: '50%' }}>
+        타이머
       </div>
+      <div className="note" style={{ width: '100%', height: '50%' }}>
+        <h3>번호를 입력해주세요</h3>
+        <div style={centerDiv}>
+          <input type="text" value={problemNumber} onChange={handleInputChange} />
+          <button onClick={handleAddProblem}>추가</button>
+          <button onClick={handleRemoveProblem}>삭제</button>
+        </div>
 
-      <ol style={listStyle}>
-        {problemQueue
-          .slice(0)
-          .reverse()
-          .map((problem, index) => (
-            <li key={index}>
-              <a
-                href={`https://www.acmicpc.net/problem/${problem}`}
-                target="_blank"
-                rel="noopener noreferrer"
+        <ol style={listStyle}>
+          {problemQueue
+            .slice(0)
+            .reverse()
+            .map((problem, index) => (
+              <motion.div
+                key={index}
+                style={{
+                  background: '#4B89DC',
+                  height: '200px',
+                  width: '75px',
+                  borderRadius: '10px',
+                }}
+                initial={{
+                  x: -100,
+                }}
               >
-                {problem}
-              </a>
-            </li>
-          ))}
-      </ol>
+                <a
+                  href={`https://www.acmicpc.net/problem/${problem}`}
+                  target="_blank"
+                  style={{
+                    color: '#fff',
+                    textDecoration: 'none',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    height: '100%',
+                  }}
+                  rel="noopener noreferrer"
+                >
+                  {problem}
+                </a>
+              </motion.div>
+            ))}
+        </ol>
+      </div>
     </div>
   );
 };
 
 const centerDivStyle: React.CSSProperties = {
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center',
-  justifyContent: 'center',
-  height: '100vh', // 화면 높이의 100%를 차지하도록 설정
+  width: '100vw',
+  height: '100vh',
 };
 
 const centerDiv: React.CSSProperties = {
@@ -76,13 +98,8 @@ const centerDiv: React.CSSProperties = {
 const listStyle: React.CSSProperties = {
   display: 'flex',
   flexDirection: 'row',
-  listStyleType: 'none', // 리스트 스타일 제거
-  padding: 0, // 패딩 제거
-};
-
-const listItemStyle: React.CSSProperties = {
-  marginRight: '8px', // 각 아이템 사이의 간격 설정
-  transition: 'opacity 0.5s', // 삭제할 때 사라지는 애니메이션 추가
+  listStyleType: 'none',
+  padding: 0,
 };
 
 export default Home;
