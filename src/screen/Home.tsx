@@ -1,10 +1,52 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Container, TextField, Button, Typography, Box, Stack } from '@mui/material';
+import {
+  Container,
+  TextField,
+  Button,
+  Typography,
+  Box,
+  Stack,
+  Modal,
+  Fade,
+  Backdrop,
+  IconButton,
+} from '@mui/material';
+import { ArrowUpward, ArrowDownward } from '@mui/icons-material';
 
 const Home = () => {
   const [problemNumber, setProblemNumber] = React.useState('');
   const [problemQueue, setProblemQueue] = React.useState<string[]>([]);
+  const [open, setOpen] = React.useState(false);
+  const [time, setTime] = React.useState(0);
+  const [minutes, setMinutes] = React.useState(0);
+  const [seconds, setSeconds] = React.useState(0);
+  const [isTimerRunning, setIsTimerRunning] = React.useState(false);
+
+  React.useEffect(() => {
+    let timer: NodeJS.Timeout | null = null;
+    if (isTimerRunning && (minutes > 0 || seconds > 0)) {
+      timer = setInterval(() => {
+        if (seconds === 0) {
+          if (minutes > 0) {
+            setMinutes((prevMinutes) => prevMinutes - 1);
+            setSeconds(59);
+          } else {
+            setIsTimerRunning(false);
+          }
+        } else {
+          setSeconds((prevSeconds) => prevSeconds - 1);
+        }
+      }, 1000);
+    } else if (isTimerRunning && minutes === 0 && seconds === 0) {
+      setIsTimerRunning(false);
+    }
+    return () => {
+      if (timer) {
+        clearInterval(timer);
+      }
+    };
+  }, [isTimerRunning, minutes, seconds]);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setProblemNumber(event.target.value);
@@ -34,6 +76,19 @@ const Home = () => {
     }
   };
 
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
+
+  const handleStartTimer = () => {
+    setMinutes(time);
+    setSeconds(0);
+    setIsTimerRunning(true);
+    handleClose(); // Close the modal when the timer starts
+  };
+
+  const increaseTime = () => setTime((prevTime) => prevTime + 5);
+  const decreaseTime = () => setTime((prevTime) => (prevTime >= 5 ? prevTime - 5 : 0));
+
   return (
     <Container
       sx={{
@@ -62,6 +117,9 @@ const Home = () => {
           삭제
         </Button>
       </Box>
+      <Button variant="outlined" color="primary" onClick={handleOpen} sx={{ mb: 2 }}>
+        타이머 열기
+      </Button>
       <Stack direction="row" spacing={2} sx={{ mt: 2 }}>
         {problemQueue
           .slice(0)
@@ -100,8 +158,56 @@ const Home = () => {
             </motion.div>
           ))}
       </Stack>
+      {isTimerRunning && (
+        <Typography variant="h5" sx={{ mt: 2 }}>
+          {`${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`}
+        </Typography>
+      )}
+      <Modal
+        open={open}
+        onClose={handleClose}
+        closeAfterTransition
+        BackdropComponent={Backdrop}
+        BackdropProps={{
+          timeout: 500,
+        }}
+      >
+        <Fade in={open}>
+          <Box sx={modalStyle}>
+            <Typography variant="h6" component="h2">
+              타이머 설정
+            </Typography>
+            <Typography variant="h4" sx={{ mt: 2, mb: 2, textAlign: 'center' }}>
+              {time} 분
+            </Typography>
+            <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
+              <IconButton onClick={increaseTime}>
+                <ArrowUpward />
+              </IconButton>
+              <IconButton onClick={decreaseTime}>
+                <ArrowDownward />
+              </IconButton>
+            </Box>
+            <Button variant="contained" color="primary" onClick={handleStartTimer} fullWidth>
+              타이머 시작
+            </Button>
+          </Box>
+        </Fade>
+      </Modal>
     </Container>
   );
+};
+
+const modalStyle = {
+  position: 'absolute' as const,
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: 400,
+  bgcolor: 'background.paper',
+  border: '2px solid #000',
+  boxShadow: 24,
+  p: 4,
 };
 
 export default Home;
