@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
+import { Container, TextField, Button, Typography, Box, Stack } from '@mui/material';
+
 const Home = () => {
-  const [problemNumber, setProblemNumber] = useState('');
-  const [problemQueue, setProblemQueue] = useState<string[]>([]);
+  const [problemNumber, setProblemNumber] = React.useState('');
+  const [problemQueue, setProblemQueue] = React.useState<string[]>([]);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setProblemNumber(event.target.value);
@@ -33,73 +35,73 @@ const Home = () => {
   };
 
   return (
-    <div style={centerDivStyle}>
-      <div className="timer" style={{ width: '100%', height: '50%' }}>
-        타이머
-      </div>
-      <div className="note" style={{ width: '100%', height: '50%' }}>
-        <h3>번호를 입력해주세요</h3>
-        <div style={centerDiv}>
-          <input type="text" value={problemNumber} onChange={handleInputChange} />
-          <button onClick={handleAddProblem}>추가</button>
-          <button onClick={handleRemoveProblem}>삭제</button>
-        </div>
-
-        <ol style={listStyle}>
-          {problemQueue
-            .slice(0)
-            .reverse()
-            .map((problem, index) => (
-              <motion.div
-                key={index}
+    <Container
+      sx={{
+        height: '100vh',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+      }}
+    >
+      <Typography variant="h4" gutterBottom>
+        번호를 입력해주세요
+      </Typography>
+      <Box component="form" sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+        <TextField
+          label="문제 번호"
+          variant="outlined"
+          value={problemNumber}
+          onChange={handleInputChange}
+          sx={{ mr: 2 }}
+        />
+        <Button variant="contained" color="primary" onClick={handleAddProblem} sx={{ mr: 2 }}>
+          추가
+        </Button>
+        <Button variant="contained" color="error" onClick={handleRemoveProblem}>
+          삭제
+        </Button>
+      </Box>
+      <Stack direction="row" spacing={2} sx={{ mt: 2 }}>
+        {problemQueue
+          .slice(0)
+          .reverse()
+          .map((problem, index) => (
+            <motion.div
+              key={index}
+              style={{
+                background: '#4B89DC',
+                height: '200px',
+                width: '75px',
+                borderRadius: '10px',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}
+              initial={{ x: -100 }}
+              animate={{ x: 0 }}
+              transition={{ duration: 0.5 }}
+            >
+              <a
+                href={`https://www.acmicpc.net/problem/${problem}`}
+                target="_blank"
                 style={{
-                  background: '#4B89DC',
-                  height: '200px',
-                  width: '75px',
-                  borderRadius: '10px',
+                  color: '#fff',
+                  textDecoration: 'none',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  height: '100%',
                 }}
-                initial={{
-                  x: -100,
-                }}
+                rel="noopener noreferrer"
               >
-                <a
-                  href={`https://www.acmicpc.net/problem/${problem}`}
-                  target="_blank"
-                  style={{
-                    color: '#fff',
-                    textDecoration: 'none',
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    height: '100%',
-                  }}
-                  rel="noopener noreferrer"
-                >
-                  {problem}
-                </a>
-              </motion.div>
-            ))}
-        </ol>
-      </div>
-    </div>
+                {problem}
+              </a>
+            </motion.div>
+          ))}
+      </Stack>
+    </Container>
   );
-};
-
-const centerDivStyle: React.CSSProperties = {
-  width: '100vw',
-  height: '100vh',
-};
-
-const centerDiv: React.CSSProperties = {
-  display: 'flex',
-  alignItems: 'center',
-};
-
-const listStyle: React.CSSProperties = {
-  display: 'flex',
-  flexDirection: 'row',
-  listStyleType: 'none',
-  padding: 0,
 };
 
 export default Home;
