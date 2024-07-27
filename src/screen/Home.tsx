@@ -1,7 +1,10 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { motion } from 'framer-motion';
+import { Container, TextField, Button, Typography, Box, Stack } from '@mui/material';
+
 const Home = () => {
-  const [problemNumber, setProblemNumber] = useState('');
-  const [problemQueue, setProblemQueue] = useState<string[]>([]);
+  const [problemNumber, setProblemNumber] = React.useState('');
+  const [problemQueue, setProblemQueue] = React.useState<string[]>([]);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setProblemNumber(event.target.value);
@@ -26,63 +29,79 @@ const Home = () => {
   const handleRemoveProblem = () => {
     if (problemQueue.length > 0) {
       const newProblemQueue = [...problemQueue];
-      newProblemQueue.shift(); // 선입선출로 첫 번째 아이템을 삭제합니다.
+      newProblemQueue.shift();
       setProblemQueue(newProblemQueue);
     }
   };
 
   return (
-    <div style={centerDivStyle}>
-      <h3>번호를 입력해주세요</h3>
-      <div style={centerDiv}>
-        <input type="text" value={problemNumber} onChange={handleInputChange} />
-        <button onClick={handleAddProblem}>추가</button>
-        <button onClick={handleRemoveProblem}>삭제</button>
-      </div>
-
-      <ol style={listStyle}>
+    <Container
+      sx={{
+        height: '100vh',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+      }}
+    >
+      <Typography variant="h4" gutterBottom>
+        번호를 입력해주세요
+      </Typography>
+      <Box component="form" sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+        <TextField
+          label="문제 번호"
+          variant="outlined"
+          value={problemNumber}
+          onChange={handleInputChange}
+          sx={{ mr: 2 }}
+        />
+        <Button variant="contained" color="primary" onClick={handleAddProblem} sx={{ mr: 2 }}>
+          추가
+        </Button>
+        <Button variant="contained" color="error" onClick={handleRemoveProblem}>
+          삭제
+        </Button>
+      </Box>
+      <Stack direction="row" spacing={2} sx={{ mt: 2 }}>
         {problemQueue
           .slice(0)
           .reverse()
           .map((problem, index) => (
-            <li key={index}>
+            <motion.div
+              key={index}
+              style={{
+                background: '#4B89DC',
+                height: '200px',
+                width: '75px',
+                borderRadius: '10px',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}
+              initial={{ x: -100 }}
+              animate={{ x: 0 }}
+              transition={{ duration: 0.5 }}
+            >
               <a
                 href={`https://www.acmicpc.net/problem/${problem}`}
                 target="_blank"
+                style={{
+                  color: '#fff',
+                  textDecoration: 'none',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  height: '100%',
+                }}
                 rel="noopener noreferrer"
               >
                 {problem}
               </a>
-            </li>
+            </motion.div>
           ))}
-      </ol>
-    </div>
+      </Stack>
+    </Container>
   );
-};
-
-const centerDivStyle: React.CSSProperties = {
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center',
-  justifyContent: 'center',
-  height: '100vh', // 화면 높이의 100%를 차지하도록 설정
-};
-
-const centerDiv: React.CSSProperties = {
-  display: 'flex',
-  alignItems: 'center',
-};
-
-const listStyle: React.CSSProperties = {
-  display: 'flex',
-  flexDirection: 'row',
-  listStyleType: 'none', // 리스트 스타일 제거
-  padding: 0, // 패딩 제거
-};
-
-const listItemStyle: React.CSSProperties = {
-  marginRight: '8px', // 각 아이템 사이의 간격 설정
-  transition: 'opacity 0.5s', // 삭제할 때 사라지는 애니메이션 추가
 };
 
 export default Home;
